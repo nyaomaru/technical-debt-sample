@@ -129,17 +129,37 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
           </FormItem>
         )}
       />
+      <FormField
+        control={control}
+        name='discountCode'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Discount Code</FormLabel>
+            <FormControl>
+              <Input placeholder='Discount Code' {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
       <div className='flex justify-between'>
         <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
         <Button type='submit'>Submit</Button>
       </div>
+      <div className='text-blue-600 text-xs'>
+        特別注文の割引コードが適用されます
+      </div>
     </form>
   );
 }
 
-export function getNormalSteps(handlers: {
+export function NoteForSpecialOrder() {
+  return <div className='text-blue-600 text-xs mt-2'>※ 特別注文です</div>;
+}
+
+export function getSpecialSteps(handlers: {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;

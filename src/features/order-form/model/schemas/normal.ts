@@ -9,3 +9,5 @@ export const normalOrderSchema = z.object({
     .regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number'),
   orderId: z.number().min(1, 'OrderId is required'),
 });
+
+export type NormalOrderSchemaType = z.infer<typeof normalOrderSchema>;

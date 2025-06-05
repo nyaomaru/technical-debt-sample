@@ -20,6 +20,11 @@ type StepTwoProps = {
 };
 
 type StepThreeProps = {
+  onNext: () => void;
+  onBack: () => void;
+};
+
+type StepFourProps = {
   onBack: () => void;
   onSubmit: () => void;
 };
@@ -104,7 +109,58 @@ function StepTwo({ onNext, onBack }: StepTwoProps) {
   );
 }
 
-function StepThree({ onBack, onSubmit }: StepThreeProps) {
+function StepThree({ onNext, onBack }: StepThreeProps) {
+  const { control, trigger } = useFormContext();
+
+  const handleNext = async () => {
+    const valid = await trigger(['orderId', 'discountCode']);
+    if (valid) {
+      onNext();
+    }
+  };
+
+  return (
+    <div className='space-y-4'>
+      <FormField
+        control={control}
+        name='orderId'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Order ID</FormLabel>
+            <FormControl>
+              <Input placeholder='Order ID' type='number' {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={control}
+        name='discountCode'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Discount Code</FormLabel>
+            <FormControl>
+              <Input placeholder='Discount Code' {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <div className='flex justify-between'>
+        <Button variant='secondary' onClick={onBack}>
+          Back
+        </Button>
+        <Button onClick={handleNext}>Next</Button>
+      </div>
+      <div className='text-blue-600 text-xs'>
+        特別注文の割引コードが適用されます
+      </div>
+    </div>
+  );
+}
+
+function StepFour({ onBack, onSubmit }: StepFourProps) {
   const { control, handleSubmit, reset, watch } = useFormContext();
 
   const onValidSubmit = () => {
@@ -118,12 +174,12 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
     <form className='space-y-4' onSubmit={handleSubmit(onValidSubmit)}>
       <FormField
         control={control}
-        name='orderId'
+        name='remarks'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Order ID</FormLabel>
+            <FormLabel>Remarks</FormLabel>
             <FormControl>
-              <Input placeholder='Order ID' type='number' {...field} />
+              <Input placeholder='Remarks' {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -139,7 +195,7 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
   );
 }
 
-export function getNormalSteps(handlers: {
+export function getAdminSteps(handlers: {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
@@ -147,8 +203,9 @@ export function getNormalSteps(handlers: {
   return [
     <StepOne key='step1' onNext={handlers.onNext} />,
     <StepTwo key='step2' onNext={handlers.onNext} onBack={handlers.onBack} />,
-    <StepThree
-      key='step3'
+    <StepThree key='step3' onNext={handlers.onNext} onBack={handlers.onBack} />,
+    <StepFour
+      key='step4'
       onBack={handlers.onBack}
       onSubmit={handlers.onSubmit}
     />,

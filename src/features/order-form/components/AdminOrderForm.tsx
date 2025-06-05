@@ -3,25 +3,26 @@
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MultiStepForm } from './MultiStepForm';
-import { getNormalSteps } from './steps/normal';
-import { normalOrderSchema } from '../model/schemas/normal';
-import type { NormalOrderSchemaType } from '../model/schemas/normal';
+import { getAdminSteps } from './steps/admin';
+import { adminOrderSchema } from '../model/schemas/admin';
+import type { AdminOrderSchemaType } from '../model/schemas/admin';
 
-export function NormalOrderForm() {
-  const methods = useForm<NormalOrderSchemaType>({
-    resolver: zodResolver(normalOrderSchema),
+export function AdminOrderForm() {
+  const methods = useForm<AdminOrderSchemaType>({
+    resolver: zodResolver(adminOrderSchema),
     mode: 'onTouched',
     defaultValues: {
       name: '',
       email: '',
       phone: '',
       orderId: 0,
+      remarks: '',
     },
   });
 
   return (
     <FormProvider {...methods}>
-      <MultiStepForm getSteps={getNormalSteps} />
+      <MultiStepForm getSteps={getAdminSteps} />
     </FormProvider>
   );
 }
