@@ -24,8 +24,45 @@ type StepThreeProps = {
   onSubmit: () => void;
 };
 
+function FormInputField({
+  name,
+  placeholder,
+  type = 'text',
+}: {
+  name: string;
+  placeholder: string;
+  type?: string;
+}) {
+  const { control } = useFormContext();
+
+  return (
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{placeholder}</FormLabel>
+          <FormControl>
+            <Input
+              placeholder={placeholder}
+              type={type}
+              {...field}
+              onChange={(e) =>
+                type === 'number'
+                  ? field.onChange(e.target.valueAsNumber)
+                  : field.onChange(e.target.value)
+              }
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
 function StepOne({ onNext }: StepOneProps) {
-  const { control, trigger } = useFormContext();
+  const { trigger } = useFormContext();
 
   const handleNext = async () => {
     const valid = await trigger(['name', 'email']);
@@ -35,34 +72,13 @@ function StepOne({ onNext }: StepOneProps) {
   };
 
   return (
-    <div className='space-y-4'>
-      <FormField
-        control={control}
-        name='name'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name</FormLabel>
-            <FormControl>
-              <Input placeholder='Name' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name='email'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input placeholder='Email' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-end'>
+    <div className='flex-1 flex flex-col justify-between'>
+      <div className='flex-grow space-y-4'>
+        <FormInputField name='name' placeholder='Name' />
+        <FormInputField name='email' placeholder='Email' />
+      </div>
+      <div className='flex-grow' />
+      <div className='mt-4 flex justify-end'>
         <Button onClick={handleNext}>Next</Button>
       </div>
     </div>
@@ -70,32 +86,23 @@ function StepOne({ onNext }: StepOneProps) {
 }
 
 function StepTwo({ onNext, onBack }: StepTwoProps) {
-  const { control, trigger } = useFormContext();
+  const { trigger } = useFormContext();
 
   const handleNext = async () => {
-    const valid = await trigger(['phone']);
+    const valid = await trigger('phone');
     if (valid) {
       onNext();
     }
   };
 
   return (
-    <div className='space-y-4'>
-      <FormField
-        control={control}
-        name='phone'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Phone</FormLabel>
-            <FormControl>
-              <Input placeholder='Phone' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-between'>
-        <Button variant='secondary' onClick={onBack}>
+    <div className='flex-1 flex flex-col justify-between'>
+      <div className='space-y-4'>
+        <FormInputField name='phone' placeholder='Phone' />
+      </div>
+      <div className='flex-grow' />
+      <div className='mt-4 flex justify-between'>
+        <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
         <Button onClick={handleNext}>Next</Button>
@@ -105,7 +112,7 @@ function StepTwo({ onNext, onBack }: StepTwoProps) {
 }
 
 function StepThree({ onBack, onSubmit }: StepThreeProps) {
-  const { control, handleSubmit, reset, watch } = useFormContext();
+  const { handleSubmit, reset, watch } = useFormContext();
 
   const onValidSubmit = () => {
     const formData = watch();
@@ -115,21 +122,14 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
   };
 
   return (
-    <form className='space-y-4' onSubmit={handleSubmit(onValidSubmit)}>
-      <FormField
-        control={control}
-        name='orderId'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Order ID</FormLabel>
-            <FormControl>
-              <Input placeholder='Order ID' type='number' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-between'>
+    <form
+      className='flex-1 flex flex-col justify-between'
+      onSubmit={handleSubmit(onValidSubmit)}
+    >
+      <div className='flex-grow space-y-4'>
+        <FormInputField name='orderId' placeholder='Order ID' type='number' />
+      </div>
+      <div className='mt-4 flex justify-between'>
         <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
