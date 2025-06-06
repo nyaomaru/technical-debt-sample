@@ -1,38 +1,44 @@
 'use client';
 
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { CheckCircleIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import type { FormData } from '@/features/order-form/model/form-context';
 
 export default function ThanksPage() {
   const [orderData, setOrderData] = useState<FormData>();
   const [message, setMessage] = useState('');
-  const fullMessage = 'Your order has been received successfully.';
   const [showIcon, setShowIcon] = useState(false);
+  const fullMessage = 'Your order has been received successfully.';
 
-  useEffect(() => {
+  const loadOrderData = useCallback(() => {
     const data = sessionStorage.getItem('orderData');
     if (data) {
       setOrderData(JSON.parse(data));
     }
   }, []);
 
-  useEffect(() => {
-    // typewriter effect
-    let i = 0;
-    const typing = setInterval(() => {
-      setMessage((prev) => prev + fullMessage.charAt(i));
-      i++;
-      if (i > fullMessage.length) {
-        clearInterval(typing);
+  const startTypewriter = useCallback(() => {
+    let index = 0;
+    const intervalId = setInterval(() => {
+      index++;
+      if (index <= fullMessage.length) {
+        setMessage(fullMessage.slice(0, index));
+      } else {
+        clearInterval(intervalId);
         setTimeout(() => setShowIcon(true), 500);
       }
     }, 50);
 
-    return () => clearInterval(typing);
-  }, []);
+    return () => clearInterval(intervalId);
+  }, [fullMessage]);
+
+  useEffect(() => {
+    loadOrderData();
+    const stopTyping = startTypewriter();
+    return () => stopTyping();
+  }, [loadOrderData, startTypewriter]);
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center p-8 space-y-8 text-center animate-fade-in'>
