@@ -1,14 +1,15 @@
 'use client';
 
-import { Input, Button } from '@/components/ui';
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+import { useState, type ReactElement } from 'react';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui';
 import { useFormContext } from 'react-hook-form';
+import { FormLayout } from '@/components/shared/form-layout';
+import { FormFields } from '@/components/shared/form-fields';
+import { FormFooter } from '@/components/shared/form-footer';
+import { FormInputField } from '@/components/shared/form-input-field';
+import { useNextHandler } from '../../hooks/use-next-handler';
+import type { StepProps } from '../../model/step';
 
 type StepOneProps = {
   onNext: () => void;
@@ -24,97 +25,50 @@ type StepThreeProps = {
   onSubmit: () => void;
 };
 
-function FormInputField({
-  name,
-  placeholder,
-  type = 'text',
-}: {
-  name: string;
-  placeholder: string;
-  type?: string;
-}) {
-  const { control } = useFormContext();
-
-  return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{placeholder}</FormLabel>
-          <FormControl>
-            <Input
-              placeholder={placeholder}
-              type={type}
-              {...field}
-              onChange={(e) =>
-                type === 'number'
-                  ? field.onChange(e.target.valueAsNumber)
-                  : field.onChange(e.target.value)
-              }
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-}
-
 function StepOne({ onNext }: StepOneProps) {
-  const { trigger } = useFormContext();
-
-  const handleNext = async () => {
-    const valid = await trigger(['name', 'email']);
-    if (valid) {
-      onNext();
-    }
-  };
+  const handleNext = useNextHandler(['name', 'email'], onNext);
 
   return (
-    <div className='flex-1 flex flex-col justify-between'>
-      <div className='flex-grow space-y-4'>
+    <FormLayout>
+      <FormFields>
         <FormInputField name='name' placeholder='Name' />
         <FormInputField name='email' placeholder='Email' />
-      </div>
-      <div className='flex-grow' />
-      <div className='mt-4 flex justify-end'>
-        <Button onClick={handleNext}>Next</Button>
-      </div>
-    </div>
+      </FormFields>
+      <FormFooter align='end'>
+        <Button type='button' onClick={handleNext}>
+          Next
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
 function StepTwo({ onNext, onBack }: StepTwoProps) {
-  const { trigger } = useFormContext();
-
-  const handleNext = async () => {
-    const valid = await trigger('phone');
-    if (valid) {
-      onNext();
-    }
-  };
+  const handleNext = useNextHandler(['phone'], onNext);
 
   return (
-    <div className='flex-1 flex flex-col justify-between'>
-      <div className='space-y-4'>
+    <FormLayout>
+      <FormFields>
         <FormInputField name='phone' placeholder='Phone' />
-      </div>
-      <div className='flex-grow' />
-      <div className='mt-4 flex justify-between'>
+      </FormFields>
+      <FormFooter align='between'>
         <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleNext}>Next</Button>
-      </div>
-    </div>
+        <Button type='button' onClick={handleNext}>
+          Next
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
 function StepThree({ onBack, onSubmit }: StepThreeProps) {
   const { handleSubmit, reset, watch } = useFormContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onValidSubmit = () => {
+    setIsSubmitting(true);
     const formData = watch();
     sessionStorage.setItem('orderData', JSON.stringify(formData));
     reset();
@@ -122,28 +76,30 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
   };
 
   return (
-    <form
-      className='flex-1 flex flex-col justify-between'
-      onSubmit={handleSubmit(onValidSubmit)}
-    >
-      <div className='flex-grow space-y-4'>
+    <FormLayout as='form' onSubmit={handleSubmit(onValidSubmit)}>
+      <FormFields>
         <FormInputField name='orderId' placeholder='Order ID' type='number' />
-      </div>
-      <div className='mt-4 flex justify-between'>
+      </FormFields>
+      <FormFooter align='between'>
         <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
-        <Button type='submit'>Submit</Button>
-      </div>
-    </form>
+        <Button type='submit' disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
-export function getNormalSteps(handlers: {
+type Handlers = {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
-}) {
+};
+
+export function getNormalSteps(handlers: Handlers): ReactElement<StepProps>[] {
   return [
     <StepOne key='step1' onNext={handlers.onNext} />,
     <StepTwo key='step2' onNext={handlers.onNext} onBack={handlers.onBack} />,

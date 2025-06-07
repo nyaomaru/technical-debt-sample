@@ -16,6 +16,7 @@ export function AdminOrderForm() {
       email: '',
       phone: '',
       orderId: 0,
+      discountCode: 0,
       remarks: '',
     },
   });

@@ -16,6 +16,7 @@ export function SpecialOrderForm() {
       email: '',
       phone: '',
       orderId: 0,
+      discountCode: 0,
     },
   });
 

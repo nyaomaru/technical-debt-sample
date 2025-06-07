@@ -1,14 +1,16 @@
 'use client';
 
-import { Input, Button } from '@/components/ui';
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form';
+import { useState, type ReactElement } from 'react';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui';
 import { useFormContext } from 'react-hook-form';
+import { FormLayout } from '@/components/shared/form-layout';
+import { FormFields } from '@/components/shared/form-fields';
+import { FormFooter } from '@/components/shared/form-footer';
+import { FormInputField } from '@/components/shared/form-input-field';
+import { useNextHandler } from '../../hooks/use-next-handler';
+import type { StepProps } from '../../model/step';
+import { NoteForSpecialOrder } from '../NoteForSpecialOrder';
 
 type StepOneProps = {
   onNext: () => void;
@@ -30,176 +32,106 @@ type StepFourProps = {
 };
 
 function StepOne({ onNext }: StepOneProps) {
-  const { control, trigger } = useFormContext();
-
-  const handleNext = async () => {
-    const valid = await trigger(['name', 'email']);
-    if (valid) {
-      onNext();
-    }
-  };
+  const handleNext = useNextHandler(['name', 'email'], onNext);
 
   return (
-    <div className='space-y-4'>
-      <FormField
-        control={control}
-        name='name'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Name</FormLabel>
-            <FormControl>
-              <Input placeholder='Name' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name='email'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <Input placeholder='Email' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-end'>
-        <Button onClick={handleNext}>Next</Button>
-      </div>
-    </div>
+    <FormLayout>
+      <FormFields>
+        <FormInputField name='name' placeholder='Name' />
+        <FormInputField name='email' placeholder='Email' />
+      </FormFields>
+      <FormFooter align='end'>
+        <Button type='button' onClick={handleNext}>
+          Next
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
 function StepTwo({ onNext, onBack }: StepTwoProps) {
-  const { control, trigger } = useFormContext();
-
-  const handleNext = async () => {
-    const valid = await trigger(['phone']);
-    if (valid) {
-      onNext();
-    }
-  };
+  const handleNext = useNextHandler(['phone'], onNext);
 
   return (
-    <div className='space-y-4'>
-      <FormField
-        control={control}
-        name='phone'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Phone</FormLabel>
-            <FormControl>
-              <Input placeholder='Phone' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-between'>
-        <Button variant='secondary' onClick={onBack}>
+    <FormLayout>
+      <FormFields>
+        <FormInputField name='phone' placeholder='Phone' />
+      </FormFields>
+      <FormFooter align='between'>
+        <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleNext}>Next</Button>
-      </div>
-    </div>
+        <Button type='button' onClick={handleNext}>
+          Next
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
 function StepThree({ onNext, onBack }: StepThreeProps) {
-  const { control, trigger } = useFormContext();
-
-  const handleNext = async () => {
-    const valid = await trigger(['orderId', 'discountCode']);
-    if (valid) {
-      onNext();
-    }
-  };
+  const handleNext = useNextHandler(['orderId', 'discountCode'], onNext);
 
   return (
-    <div className='space-y-4'>
-      <FormField
-        control={control}
-        name='orderId'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Order ID</FormLabel>
-            <FormControl>
-              <Input placeholder='Order ID' type='number' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={control}
-        name='discountCode'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Discount Code</FormLabel>
-            <FormControl>
-              <Input placeholder='Discount Code' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-between'>
-        <Button variant='secondary' onClick={onBack}>
+    <FormLayout>
+      <FormFields>
+        <FormInputField name='orderId' placeholder='Order ID' type='number' />
+        <FormInputField name='discountCode' placeholder='Discount Code' />
+      </FormFields>
+      <FormFooter align='between'>
+        <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
-        <Button onClick={handleNext}>Next</Button>
-      </div>
-      <div className='text-blue-600 text-xs'>
-        特別注文の割引コードが適用されます
-      </div>
-    </div>
+        <Button type='button' onClick={handleNext}>
+          Next
+        </Button>
+      </FormFooter>
+      <NoteForSpecialOrder />
+    </FormLayout>
   );
 }
 
 function StepFour({ onBack, onSubmit }: StepFourProps) {
-  const { control, handleSubmit, reset, watch } = useFormContext();
+  const { handleSubmit, reset, watch } = useFormContext();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onValidSubmit = () => {
-    const formData = watch();
-    sessionStorage.setItem('orderData', JSON.stringify(formData));
-    reset();
-    onSubmit();
+  const onValidSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const formData = watch();
+      sessionStorage.setItem('orderData', JSON.stringify(formData));
+      reset();
+      await onSubmit();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <form className='space-y-4' onSubmit={handleSubmit(onValidSubmit)}>
-      <FormField
-        control={control}
-        name='remarks'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Remarks</FormLabel>
-            <FormControl>
-              <Input placeholder='Remarks' {...field} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-      <div className='flex justify-between'>
+    <FormLayout as='form' onSubmit={handleSubmit(onValidSubmit)}>
+      <FormFields>
+        <FormInputField name='remarks' placeholder='Remarks' />
+      </FormFields>
+      <FormFooter align='between'>
         <Button variant='secondary' type='button' onClick={onBack}>
           Back
         </Button>
-        <Button type='submit'>Submit</Button>
-      </div>
-    </form>
+        <Button type='submit' disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Button>
+      </FormFooter>
+    </FormLayout>
   );
 }
 
-export function getAdminSteps(handlers: {
+type Handlers = {
   onNext: () => void;
   onBack: () => void;
   onSubmit: () => void;
-}) {
+};
+
+export function getAdminSteps(handlers: Handlers): ReactElement<StepProps>[] {
   return [
     <StepOne key='step1' onNext={handlers.onNext} />,
     <StepTwo key='step2' onNext={handlers.onNext} onBack={handlers.onBack} />,
