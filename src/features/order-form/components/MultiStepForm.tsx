@@ -3,12 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
-
-type StepProps = {
-  onNext: () => void;
-  onBack?: () => void;
-  onSubmit?: () => void;
-};
+import type { StepProps } from '../model/step';
 
 type MultiStepFormProps = {
   getSteps: (handlers: {
