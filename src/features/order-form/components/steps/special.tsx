@@ -12,6 +12,7 @@ import {
 } from '@/components/shared';
 import { Button } from '@/components/ui';
 
+import { NoteForSpecialOrder } from '../NoteForSpecialOrder';
 import { useNextHandler } from '../../hooks/use-next-handler';
 import type { StepProps } from '../../model/step';
 
@@ -71,18 +72,27 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
   const { handleSubmit, reset, watch } = useFormContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const onValidSubmit = () => {
-    setIsSubmitting(true);
-    const formData = watch();
-    sessionStorage.setItem('orderData', JSON.stringify(formData));
-    reset();
-    onSubmit();
+  const onValidSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const formData = watch();
+      sessionStorage.setItem('orderData', JSON.stringify(formData));
+      reset();
+      await onSubmit();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <FormLayout as='form' onSubmit={handleSubmit(onValidSubmit)}>
       <FormFields>
         <FormInputField name='orderId' placeholder='Order ID' type='number' />
+        <FormInputField
+          name='discountCode'
+          placeholder='Discount Code'
+          type='number'
+        />
       </FormFields>
       <FormFooter align='between'>
         <Button variant='secondary' type='button' onClick={onBack}>
@@ -93,6 +103,7 @@ function StepThree({ onBack, onSubmit }: StepThreeProps) {
           {isSubmitting ? 'Submitting...' : 'Submit'}
         </Button>
       </FormFooter>
+      <NoteForSpecialOrder />
     </FormLayout>
   );
 }
@@ -103,7 +114,7 @@ type Handlers = {
   onSubmit: () => void;
 };
 
-export function getNormalSteps(handlers: Handlers): ReactElement<StepProps>[] {
+export function getSpecialSteps(handlers: Handlers): ReactElement<StepProps>[] {
   return [
     <StepOne key='step1' onNext={handlers.onNext} />,
     <StepTwo key='step2' onNext={handlers.onNext} onBack={handlers.onBack} />,

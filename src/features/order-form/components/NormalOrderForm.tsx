@@ -1,23 +1,28 @@
 'use client';
 
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { MultiStepForm } from './MultiStepForm';
 import { getNormalSteps } from './steps/normal';
-import { FormProvider } from '../model/FormContextProvider';
+import { normalOrderSchema } from '../model/schemas/normal';
+import type { NormalOrderSchemaType } from '../model/schemas/normal';
 
-export function NormalOrderForm({
-  isSpecial = false,
-}: {
-  isSpecial?: boolean;
-}) {
+export function NormalOrderForm() {
+  const methods = useForm<NormalOrderSchemaType>({
+    resolver: zodResolver(normalOrderSchema),
+    mode: 'onTouched',
+    defaultValues: {
+      name: '',
+      email: '',
+      phone: '',
+      orderId: 0,
+    },
+  });
+
   return (
-    <FormProvider initialDiscountCode={isSpecial ? 'SPECIAL-OFFER' : undefined}>
-      <MultiStepForm
-        steps={getNormalSteps(isSpecial, {
-          onNext: () => {},
-          onBack: () => {},
-          onSubmit: () => {},
-        })}
-      />
+    <FormProvider {...methods}>
+      <MultiStepForm getSteps={getNormalSteps} />
     </FormProvider>
   );
 }

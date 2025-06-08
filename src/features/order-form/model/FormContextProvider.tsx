@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState } from 'react';
 
 export type FormData = {
-  customerName: string;
+  name: string;
   email: string;
   phone: string;
   orderId: number;
@@ -17,7 +17,7 @@ type FormContextType = {
 };
 
 const defaultFormData: FormData = {
-  customerName: '',
+  name: '',
   email: '',
   phone: '',
   orderId: 0,
