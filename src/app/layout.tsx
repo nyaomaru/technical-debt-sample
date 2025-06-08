@@ -26,13 +26,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white h-full`}
       >
-        <div className='flex flex-col h-full'>
+        <main className='flex flex-col h-full'>
           <Header />
-          <main className='flex-1 flex flex-col items-center justify-center overflow-hidden px-6 py-12'>
+          <div className='flex-1 flex flex-col items-center justify-center overflow-hidden px-6 py-12'>
             {children}
-          </main>
+          </div>
           <Footer />
-        </div>
+        </main>
       </body>
     </html>
   );
