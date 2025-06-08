@@ -1,16 +1,20 @@
 'use client';
 
-import { useState, type ReactElement } from 'react';
 import { Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui';
+import { useState, type ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { FormLayout } from '@/components/shared/form-layout';
-import { FormFields } from '@/components/shared/form-fields';
-import { FormFooter } from '@/components/shared/form-footer';
-import { FormInputField } from '@/components/shared/form-input-field';
+
+import {
+  FormLayout,
+  FormFields,
+  FormFooter,
+  FormInputField,
+} from '@/components/shared';
+import { Button } from '@/components/ui';
+
+import { NoteForSpecialOrder } from '../NoteForSpecialOrder';
 import { useNextHandler } from '../../hooks/use-next-handler';
 import type { StepProps } from '../../model/step';
-import { NoteForSpecialOrder } from '../NoteForSpecialOrder';
 
 type StepOneProps = {
   onNext: () => void;
@@ -76,7 +80,11 @@ function StepThree({ onNext, onBack }: StepThreeProps) {
     <FormLayout>
       <FormFields>
         <FormInputField name='orderId' placeholder='Order ID' type='number' />
-        <FormInputField name='discountCode' placeholder='Discount Code' />
+        <FormInputField
+          name='discountCode'
+          placeholder='Discount Code'
+          type='number'
+        />
       </FormFields>
       <FormFooter align='between'>
         <Button variant='secondary' type='button' onClick={onBack}>

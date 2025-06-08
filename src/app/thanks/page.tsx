@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { CheckCircleIcon } from 'lucide-react';
-import type { FormData } from '@/features/order-form/model/form-context';
+import Link from 'next/link';
+import { useEffect, useState, useCallback } from 'react';
+
+import { Button } from '@/components/ui';
+import { Heading } from '@/components/shared';
+import type { FormData } from '@/features/order-form/model/FormContextProvider';
 
 export default function ThanksPage() {
   const [orderData, setOrderData] = useState<FormData>();
@@ -48,7 +50,7 @@ export default function ThanksPage() {
           size={80}
         />
       )}
-      <h1 className='text-3xl font-bold text-white'>Thank you!</h1>
+      <Heading level={1}>Thank you!</Heading>
       <p className='text-lg text-gray-400 font-mono min-h-[1.5em]'>
         {message}
         <span className='blink-cursor'>_</span>
@@ -56,7 +58,9 @@ export default function ThanksPage() {
 
       {orderData && (
         <div className='text-left bg-neutral-800 border border-white/20 p-6 rounded-xl shadow-lg w-full max-w-md'>
-          <h2 className='text-lg font-bold text-white mb-4'>Submitted Data</h2>
+          <Heading level={2} className='mb-4'>
+            Submitted Data
+          </Heading>
           <pre className='text-sm text-gray-300 overflow-x-auto'>
             {JSON.stringify(orderData, null, 2)}
           </pre>

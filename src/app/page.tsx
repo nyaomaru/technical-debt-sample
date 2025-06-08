@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'; // shadcnのラジオ
+
+import { Button, RadioGroup, RadioGroupItem } from '@/components/ui';
+import { Heading } from '@/components/shared';
 
 export default function Home() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function Home() {
 
   return (
     <div className='min-h-screen flex flex-col items-center justify-center gap-8 p-8'>
-      <h1 className='text-2xl font-bold'>Order Form Demo</h1>
+      <Heading level={1}>Order Form Demo</Heading>
       <div className='flex flex-col gap-4 w-full max-w-sm'>
         <RadioGroup
           value={role}

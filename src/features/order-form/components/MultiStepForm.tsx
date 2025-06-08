@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
+
 import type { StepProps } from '../model/step';
 
 type MultiStepFormProps = {
