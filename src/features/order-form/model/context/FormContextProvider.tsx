@@ -1,14 +1,11 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
+import { z } from 'zod';
 
-export type FormData = {
-  name: string;
-  email: string;
-  phone: string;
-  orderId: number;
-  discountCode?: string;
-};
+import { adminOrderSchema } from '@/features/order-form/model/schemas/admin';
+
+export type FormData = z.infer<typeof adminOrderSchema>;
 
 type FormContextType = {
   formData: FormData;
@@ -22,6 +19,7 @@ const defaultFormData: FormData = {
   phone: '',
   orderId: 0,
   discountCode: undefined,
+  remarks: '',
 };
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
@@ -30,7 +28,7 @@ export function FormProvider({
   initialDiscountCode,
 }: {
   children: React.ReactNode;
-  initialDiscountCode?: string;
+  initialDiscountCode?: number;
 }) {
   const [formData, setFormDataState] = useState<FormData>({
     ...defaultFormData,
