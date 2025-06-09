@@ -6,7 +6,7 @@ export const normalOrderSchema = z.object({
   phone: z
     .string()
     .min(10, 'Phone number must be at least 10 digits')
-    .regex(/^\+?[1-9]\d{1,14}$/, 'Invalid phone number (E.164 format)'),
+    .regex(/^\+?[0-9]{10,15}$/, 'Invalid phone number'),
   orderId: z.number().positive('OrderId must be positive'),
 });
 
