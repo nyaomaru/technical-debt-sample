@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from 'react';
 
 import { Button } from '@/components/ui';
 import { Heading } from '@/components/shared';
-import type { FormData } from '@/features/order-form/model/FormContextProvider';
+import type { FormData } from '@/features/order-form/model/context/FormContextProvider';
 
 export default function ThanksPage() {
   const [orderData, setOrderData] = useState<FormData>();

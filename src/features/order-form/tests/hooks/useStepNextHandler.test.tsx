@@ -2,9 +2,9 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useNextHandler } from '../../hooks/use-next-handler';
+import { useStepNextHandler } from '../../hooks/useStepNextHandler';
 
-describe('useNextHandler', () => {
+describe('useStepNextHandler', () => {
   it('should call onNext when validation passes', async () => {
     const onNext = vi.fn();
 
@@ -16,7 +16,7 @@ describe('useNextHandler', () => {
     };
 
     const { result } = renderHook(
-      () => useNextHandler(['name', 'email'], onNext),
+      () => useStepNextHandler(['name', 'email'], onNext),
       { wrapper: Wrapper }
     );
 
@@ -36,7 +36,7 @@ describe('useNextHandler', () => {
     };
 
     const { result } = renderHook(
-      () => useNextHandler(['name', 'email'], onNext),
+      () => useStepNextHandler(['name', 'email'], onNext),
       { wrapper: Wrapper }
     );
 

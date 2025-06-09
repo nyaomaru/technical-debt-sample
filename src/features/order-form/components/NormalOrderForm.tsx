@@ -4,7 +4,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { MultiStepForm } from './MultiStepForm';
-import { getNormalSteps } from './steps/normal';
+import { getNormalSteps } from './steps/normal/getSteps';
 import { normalOrderSchema } from '../model/schemas/normal';
 import type { NormalOrderSchemaType } from '../model/schemas/normal';
 

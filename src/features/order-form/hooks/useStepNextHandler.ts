@@ -14,7 +14,7 @@ import { useFormContext } from 'react-hook-form';
  * });
  * ```
  */
-export function useNextHandler(fields: string[], onNext: () => void) {
+export function useStepNextHandler(fields: string[], onNext: () => void) {
   const { trigger } = useFormContext();
 
   return async () => {

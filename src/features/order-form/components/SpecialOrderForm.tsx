@@ -4,7 +4,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { MultiStepForm } from './MultiStepForm';
-import { getSpecialSteps } from './steps/special';
+import { getSpecialSteps } from './steps/special/getSteps';
 import { specialOrderSchema } from '../model/schemas/special';
 import type { SpecialOrderSchemaType } from '../model/schemas/special';
 
