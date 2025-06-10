@@ -5,13 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui';
 
-import type { StepProps } from '../model/types/step';
-
-type StepHandlers = {
-  onNext: () => void;
-  onBack: () => void;
-  onSubmit: () => void;
-};
+import type { StepProps, StepHandlers } from '../model/types/step';
 
 type MultiStepFormProps = {
   getSteps: (handlers: StepHandlers) => React.ReactElement<StepProps>[];
