@@ -1,36 +1,173 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Technical Debt Sample
 
-## Getting Started
+This repository demonstrates how to refactor a form component suffering from technical debt.
 
-First, run the development server:
+It is built with `Next.js` (App Router), `zod`, `React Hook Form (RHF)`, and `shadcn/ui`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Philosophy
+
+- Feature-based architecture with App Router
+- Form validation using `zod`
+- Form logic implemented using `react-hook-form`
+- UI styled with `tailwindcss` and `shadcn/ui` components
+
+---
+
+## Problem
+
+Imagine you created a bloated `OrderForm` component like this:
+
+<details>
+<summary>Click to expand code sample</summary>
+
+```tsx
+import { useState, useEffect } from 'react';
+import {
+  stepOneSchema,
+  stepTwoSchema,
+  stepThreeSchema,
+  stepFourSchema,
+} from './formSchema';
+
+type Form = {
+  customerName: string; // Step1
+  email: string; // Step1
+  phone: string; // Step2
+  orderId: number; // Step3
+  discountCode?: number; // Step3 (only special)
+  remarks?: string; // Step4 (only admin)
+};
+
+export function OrderForm({
+  isSpecial,
+  isAdmin,
+}: {
+  isSpecial: boolean;
+  isAdmin: boolean;
+}) {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState<Form>({
+    customerName: '',
+    email: '',
+    phone: '',
+    orderId: 0,
+    discountCode: undefined,
+    remarks: undefined,
+  });
+
+  useEffect(() => {
+    if (isSpecial) {
+      // If it is special order, init to discountCode
+      setFormData((prev) => ({
+        ...prev,
+        discountCode: 666,
+      }));
+    }
+  }, [isSpecial]);
+
+  const handleNextStep = async () => {
+    try {
+      if (step === 1) {
+        stepOneSchema.parse(formData);
+        setStep(2);
+      } else if (step === 2) {
+        stepTwoSchema.parse(formData);
+        setStep(3);
+      } else if (step === 3) {
+        stepThreeSchema(isSpecial).parse(formData);
+        // If admin user, go to step 4. Otherwise to submit.
+        if (isAdmin) {
+          setStep(4);
+        } else {
+          await handleSubmit();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      // Only Step4, validate stepFourSchema
+      if (isAdmin && step === 4) {
+        stepFourSchema.parse(formData);
+      }
+      await api.post('/orders', formData);
+      alert('Succeeded order！');
+    } catch (e) {
+      console.error(e);
+      alert('Denied order...');
+    }
+  };
+
+  return (
+    <div>
+      {step === 1 && (
+        <StepOne
+          data={formData}
+          setFormData={setFormData}
+          onNext={handleNextStep}
+        />
+      )}
+      {step === 2 && (
+        <StepTwo
+          data={formData}
+          setFormData={setFormData}
+          onBack={() => setStep(1)}
+          onNext={handleNextStep}
+        />
+      )}
+      {step === 3 && (
+        <StepThree
+          data={formData}
+          setFormData={setFormData}
+          onBack={() => setStep(2)}
+          onNext={handleNextStep}
+          showDiscountField={isSpecial}
+        />
+      )}
+      {step === 4 && (
+        <StepFour
+          data={formData}
+          setFormData={setFormData}
+          onBack={() => setStep(3)}
+          onSubmit={handleSubmit}
+        />
+      )}
+      {isSpecial && <NoteForSpecialOrder />}
+      {isAdmin && <NoteForSpecialOrder />}
+    </div>
+  );
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+</details>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This is a typical case of technical debt — too much logic crammed into a single component, making it hard to maintain, test, or extend.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Develop
 
-## Learn More
+### Run dev server
 
-To learn more about Next.js, take a look at the following resources:
+```sh
+pnpm dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Run tests
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```sh
+pnpm test
+```
 
-## Deploy on Vercel
+### Add UI components (via `shadcn`)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```sh
+pnpm dlx shadcn@latest add {componentName}
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Related Article
+
+- [Zenn: Refactor technical debt in forms](https://zenn.dev/nyaomaru/articles/technical-debt-code)
